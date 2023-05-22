@@ -1,16 +1,35 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import SingleTask from "../components/SingleTask";
-import { View, StyleSheet, Text, SafeAreaView, Animated } from "react-native";
+import { View, StyleSheet, Text, SafeAreaView, Animated, Pressable, Modal } from "react-native";
 import Tasks from "../components/Tasks";
-import DynamicHeader from "../components/DynamicHeader";
+
+import CreateTask from "../components/CreateTask";
 
 const TaskrApp = () => {
-    let scrollOffsetY = useRef(new Animated.Value(0)).current;
+   const [createModal, setCreateModal] = useState(false);
+
+   const openCreateModal = () => {
+    setCreateModal(true);
+    console.log('opening modal')
+   }
+
+   const closeModal = () => {
+    setCreateModal(false);
+    console.log('closing modal')
+   }
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text>Taskr</Text>
+        <Pressable
+          onPress={openCreateModal}
+          >
+            <Text>+</Text>
+          </Pressable>
       </View>
+      <CreateTask visible={createModal} onClose={closeModal}  />
       <Tasks />
     </SafeAreaView>
   );

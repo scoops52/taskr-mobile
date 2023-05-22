@@ -3,9 +3,10 @@ import { FlatList, View, StyleSheet } from 'react-native'
 import { exampleTasks } from '../constants/exampleTasks'
 import SingleTask from './SingleTask';
 import { Task } from '../redux/tasksSlice';
+import { useAppSelector } from '../redux/hooks';
 
 const Tasks = () => {
-    const tasks: Task[] = exampleTasks;
+    const tasks = useAppSelector(state => state.tasks.tasks)
     const keyExtractor = (task: Task) => task.id?.toString() || '';
   return (
     <View style={styles.container}>
