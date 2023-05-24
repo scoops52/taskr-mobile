@@ -22,11 +22,11 @@ const TaskrApp = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text>Taskr</Text>
+        <Text style={styles.title}>Taskr</Text>
         <Pressable
           onPress={openCreateModal}
           >
-            <Text>+</Text>
+            <Text style={styles.title}>+</Text>
           </Pressable>
       </View>
       <CreateTask visible={createModal} onClose={closeModal}  />
@@ -38,15 +38,17 @@ const TaskrApp = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'rgb(10,10,10)',
   },
   header: {
-    backgroundColor: 'rgba(211,211,211, 0.5)',
     padding: 16,
     backgroundOpacity: 10
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: 'blue',
+    textAlign: 'center',
   },
 
 });

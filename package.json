@@ -24,7 +24,8 @@
     "react-native-screens": "~3.20.0",
     "react-native-web": "~0.18.11",
     "react-redux": "^8.0.5",
-    "remote-redux-devtools": "^0.5.16"
+    "remote-redux-devtools": "^0.5.16",
+    "react-native-svg": "13.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -7,7 +7,7 @@ import { calculateEndTime, startTask, stopTask } from '../redux/tasksSlice';
 const ToggleTask = ({ task }: TaskProps) => {
     const [label, setLabel] = useState('Start Task');
     const dispatch = useAppDispatch();
-    const [color, setColor] = useState(task.backgroundColor);
+    const [color, setColor] = useState(task.color);
 
     const handleToggle = () => {
         if (!task.isActive) {
@@ -15,12 +15,12 @@ const ToggleTask = ({ task }: TaskProps) => {
             dispatch(calculateEndTime(task.id))
             setLabel('Stop Task');
             
-            setColor('#ffb340c3')
+            setColor(task.color)
         } else {
             dispatch(stopTask(task.id));
             setLabel('Start Task');
             
-            setColor(task.backgroundColor)
+            setColor(task.color)
         }
     }
   return (
@@ -30,7 +30,7 @@ const ToggleTask = ({ task }: TaskProps) => {
         style={({pressed}) => [
             {
                 backgroundColor: pressed ? color + '80' : color
-            }, styles.button
+            }, styles.button, 
         ]}
            >
         <Text style={styles.label}>{label}</Text>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'rgba(255,255,255,0.5)'
+        color: 'rgba(0,0,0,0.5)'
     }
 })
 

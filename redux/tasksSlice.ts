@@ -10,8 +10,7 @@ export interface Task {
     isActive: boolean;
     timeRemaining: number;
     endTime: number;
-    backgroundColor: string;
-    outlineColor: string;
+    color: string;
 }
 
 type InitialState = {
@@ -72,14 +71,13 @@ const tasksSlice = createSlice({
             state.tasks = state.tasks.filter((task) => task.id !== action.payload)
         },
         editTask: (state, action: PayloadAction<Task>) => {
-            const { id, name, duration, isActive, timeRemaining, backgroundColor, outlineColor } = action.payload;
+            const { id, name, duration, isActive, timeRemaining, color } = action.payload;
             const task = state.tasks.find((task) => task.id === id)
             if (task) {
                 task.name = name;
                 task.duration = duration;
                 task.isActive = isActive;
-                task.backgroundColor = backgroundColor;
-                task.outlineColor = outlineColor;
+                task.color = color;
                 task.timeRemaining = timeRemaining;
 
             }
