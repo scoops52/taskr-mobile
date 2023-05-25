@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { TaskProps } from './SingleTask'
 import { useAppDispatch } from '../redux/hooks';
@@ -9,18 +9,20 @@ const ToggleTask = ({ task }: TaskProps) => {
     const dispatch = useAppDispatch();
     const [color, setColor] = useState(task.color);
 
+    useEffect(() => {
+      setColor(task.color);
+    
+    }, [task.color])
+    
+
     const handleToggle = () => {
         if (!task.isActive) {
             dispatch(startTask(task.id));
             dispatch(calculateEndTime(task.id))
             setLabel('Stop Task');
-            
-            setColor(task.color)
         } else {
             dispatch(stopTask(task.id));
             setLabel('Start Task');
-            
-            setColor(task.color)
         }
     }
   return (

@@ -1,10 +1,17 @@
-import React from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { Task } from "../redux/tasksSlice";
-import CountDownTimer from "./CountDownTimer";
+import React, { useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Text, Animated, Pressable} from "react-native";
+import { Task, removeTask } from "../redux/tasksSlice";
+
 import ToggleTask from "./ToggleTask";
 import { useAppDispatch } from "../redux/hooks";
 import ProgressTimer from "./ProgressTimer";
+import { Swipeable, TouchableOpacity } from "react-native-gesture-handler";
+import CreateTask from "./CreateTask";
+import EditTask from "./EditTask"
+import { MaterialIcons } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons'; 
+import { FontAwesome } from '@expo/vector-icons';
+import CompleteTask from "./CompleteTask";
 
 export interface TaskProps {
   task: Task;
@@ -12,11 +19,61 @@ export interface TaskProps {
 
 const SingleTask = ({ task }: TaskProps) => {
   const dispatch = useAppDispatch();
+  const [edit, setEdit] = useState(false);
+  const [complete, setComplete] = useState(false);
   const hours = Math.floor(task.duration / 60);
   const minutes = Math.floor(task.duration % 60);
   const backgroundColor = `${task.color}80`
 
+  const formatTime = (time: number) => {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = time % 60;
+    const currentTime = new Date();
+
+
+    currentTime.setHours(hours, minutes, seconds)
+
+    return currentTime;
+  }
+
+  const formattedTime = formatTime(task.endTime);
+
+  const handleDelete = () => {
+    dispatch(removeTask(task.id))
+  }
+
+  const handleEdit = () => {
+    setEdit(true);
+  }
+  const closeModal = () => {
+    setEdit(false);
+    setComplete(false);
+
+   }
+
+  useEffect(() => {
+    if (task.timeRemaining === 0) {
+      setComplete(true);
+    }
+  },[task.timeRemaining])
+
+  // Swipe component logic //
+  const renderRightActions = () => {
+    return (
+      
+        <View style={styles.deleteContainer}>
+          <Pressable onPress={handleDelete}>
+            <FontAwesome name="trash" size={54} color="#b80c09" />
+          </Pressable>
+        </View>
+      
+    );
+  };
+
   return (
+    <Swipeable renderRightActions={renderRightActions}>
+    <Pressable onPress={handleEdit} style={ edit && {opacity: 0.5} }>
     <View style={[styles.container, { backgroundColor }, task.isActive && styles.activeStyles, { borderColor: task.color} ]}>
       <Text style={[styles.name, { color: task.color }]}>{task.name}</Text>
       <View style={styles.innerContainer}>
@@ -25,14 +82,22 @@ const SingleTask = ({ task }: TaskProps) => {
             {hours} Hr {minutes} Min
           </Text >
           <ToggleTask task={task} />
-          <Text style={[styles.info, { color: task.color }]}>3:11 PM - 4:11 PM</Text>
-        </View>
+          {
+          task.isActive 
+          ? <Text style={[styles.info, { color: task.color }]}>{`${new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit' })} - ${formattedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</Text>
+          : <Text style={[styles.info, { color: task.color }]}>--:-- - --:--</Text>
+        }
+          </View>
         <View style={styles.timerContainer}>
           <ProgressTimer task={task} />
           {/* <CountDownTimer task={task} /> */}
         </View>
       </View>
     </View>
+    </Pressable>
+    {edit && <EditTask visible={edit} onClose={closeModal} task={task} />}
+    {complete && <CompleteTask visible={complete} onClose={closeModal} task={task} />}
+    </Swipeable>
   );
 };
 
@@ -76,6 +141,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  deleteContainer: {
+    width: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
 });
 
 export default SingleTask;

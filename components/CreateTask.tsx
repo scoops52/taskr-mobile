@@ -6,8 +6,9 @@ import {
   Pressable,
   StyleSheet,
   Dimensions,
+  TouchableWithoutFeedback,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useAppDispatch } from "../redux/hooks";
 import { Picker } from "@react-native-picker/picker";
 import { AntDesign } from "@expo/vector-icons";
@@ -23,10 +24,10 @@ const CreateTask = ({ visible, onClose }: ModalProps) => {
   const [name, setName] = useState("");
   const [selectedHours, setSelectedHours] = useState(2);
   const [selectedMinutes, setSelectedMinutes] = useState(30);
-  const [selectedColor, setSelectedColor] = useState("green");
+  const [selectedColor, setSelectedColor] = useState('#679436');
   const hoursArray: number[] = Array.from({ length: 25 }, (v, i) => i % 25);
   const minutesArray: number[] = Array.from({ length: 60 }, (v, i) => i);
-  const colorArray: string[] = ['#679436', '#F680F7', '#ba179d', '#ffc95c', '#29abe2' ]
+  const colorArray: string[] = ['#679436', '#F680F7', '#3D4ABA', '#ffc95c', '#29abe2', '#07E092' ]
 
   const handleClose = () => {
     onClose();
@@ -34,14 +35,23 @@ const CreateTask = ({ visible, onClose }: ModalProps) => {
   };
 
   const handleHourChange = (itemValue: number) => {
-    setSelectedHours(itemValue);
+    if (itemValue === 0 && selectedMinutes === 0) {
+        setSelectedMinutes(1);
+        setSelectedHours(0);
+      } else {
+      setSelectedHours(itemValue);
+      }
   };
   const handleMinuteChange = (itemValue: number) => {
+    if (selectedHours === 0 && itemValue === 0) {
+        setSelectedMinutes(1);
+    } else {
     setSelectedMinutes(itemValue);
+    }
   };
   const duration = selectedHours * 60 + selectedMinutes;
-  const handleSubmit = () => {
-    dispatch(createTask({
+  const handleSubmit = async () => {
+    await dispatch(createTask({
         id: Math.floor(Math.random() * 1000),
         name,
         duration,
@@ -50,7 +60,16 @@ const CreateTask = ({ visible, onClose }: ModalProps) => {
         endTime: 0,
         color: selectedColor
     }));
+    setName('');
+    setSelectedColor('#679436')
     onClose();
+  }
+
+  const textInputRef = useRef<TextInput>(null)
+  const blurInput = () => {
+    if(textInputRef.current) {
+        textInputRef.current.blur();
+    }
   }
 
   return (
@@ -61,6 +80,7 @@ const CreateTask = ({ visible, onClose }: ModalProps) => {
       transparent={true}
     >
       <View style={styles.modal}>
+        <TouchableWithoutFeedback onPress={blurInput} >
         <View style={styles.container}>
           <View style={styles.head}>
             <Text style={styles.title}>Create a Task</Text>
@@ -77,6 +97,8 @@ const CreateTask = ({ visible, onClose }: ModalProps) => {
                 placeholder="Task Name"
                 placeholderTextColor="#505050"
                 style={styles.input}
+                returnKeyType="done"
+                ref={textInputRef}
               />
               <View>
               <Text style={styles.label}>Duration:</Text>
@@ -132,7 +154,8 @@ const CreateTask = ({ visible, onClose }: ModalProps) => {
               <Text style={styles.submitText}>Create Task</Text>
             </Pressable>
             </View>
-          </View>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
     </Modal>
   );
@@ -167,6 +190,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: "bold",
+    color: "#CBCBCB"
   },
   optionsContainer: {
     gap: 60,
