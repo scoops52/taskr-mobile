@@ -4,14 +4,16 @@ import { ModalProps } from "./CreateTask";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import About from "./About";
 import ClearAll from "./ClearAll";
-import { MaterialCommunityIcons, Fontisto } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, Fontisto, FontAwesome5 } from '@expo/vector-icons'; 
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setTheme } from "../redux/themeSlice";
+import HowTo from "./HowTo";
 
 const Menu = ({ visible, onClose }: ModalProps) => {
   const theme = useAppSelector(state => state.theme.theme);
   const dispatch = useAppDispatch();
   const [about, setAbout] = useState(false);
+  const [howTo, setHowTo] = useState(false)
   const [clear, setClear] = useState(false);
   const [lightTheme, setLightTheme] = useState(false);
 
@@ -20,9 +22,20 @@ const Menu = ({ visible, onClose }: ModalProps) => {
     onClose();
   };
 
+ 
+
   const aboutModalClose = () => {
     setAbout(false);
   };
+
+  const handleHowTo = () => {
+    setHowTo(true);
+    onClose();
+  };
+
+  const howToModalClose = () => {
+    setHowTo(false);
+  }
 
   const handleClear = () => {
     setClear(true);
@@ -55,6 +68,16 @@ const Menu = ({ visible, onClose }: ModalProps) => {
               ]}
             >
               <Text style={styles.menuItemText}>About</Text>
+              <FontAwesome5 name="readme" size={24} color="#CBCBCB" />
+            </Pressable>
+            <Pressable
+              onPress={handleHowTo}
+              style={({ pressed }) => [
+                styles.menuItem,
+                { opacity: pressed ? 0.25 : 1 },
+              ]}
+            >
+              <Text style={styles.menuItemText}>How To</Text>
               <AntDesign name="infocirlceo" size={24} color="#CBCBCB" />
             </Pressable>
             <Pressable
@@ -88,6 +111,7 @@ const Menu = ({ visible, onClose }: ModalProps) => {
         </Pressable>
       </Modal>
       <About visible={about} onClose={aboutModalClose} />
+      <HowTo visible={howTo} onClose={howToModalClose} />
       <ClearAll visible={clear} onClose={clearModalClose} />
     </>
   );

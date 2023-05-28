@@ -3,12 +3,10 @@ import { View, StyleSheet, Text, SafeAreaView, Animated, Pressable, Platform, St
 import Tasks from "../components/Tasks";
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import * as Notifications from 'expo-notifications';
-
 import CreateTask from "../components/CreateTask";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import { useAppSelector } from "../redux/hooks";
-import ReorderedTasks from "../components/ReorderedTasks";
 
 const headerHeight = Platform.select({
   ios: 115,
@@ -84,7 +82,7 @@ const TaskrApp = () => {
           <SimpleLineIcons name="options-vertical" size={25} color="#CBCBCB" />
         </Pressable>
       </Animated.View>
-      <ReorderedTasks headerHeight={headerHeight} />
+      <Tasks headerHeight={headerHeight} scrollY={scrollY} />
       <CreateTask visible={create} onClose={closeModal}  />
       <Menu visible={menu} onClose={closeModal}  />
     </View>
