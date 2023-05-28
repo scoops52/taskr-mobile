@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import React, { useState, useRef } from "react";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { Picker } from "@react-native-picker/picker";
 import { AntDesign } from "@expo/vector-icons";
 import { createTask } from "../redux/tasksSlice";
@@ -20,57 +20,67 @@ export interface ModalProps {
 }
 
 const CreateTask = ({ visible, onClose }: ModalProps) => {
+  const light = useAppSelector((state) => state.theme.theme === "light");
   const dispatch = useAppDispatch();
   const [name, setName] = useState("");
   const [selectedHours, setSelectedHours] = useState(2);
   const [selectedMinutes, setSelectedMinutes] = useState(30);
-  const [selectedColor, setSelectedColor] = useState('#679436');
+  const [selectedColor, setSelectedColor] = useState("#679436");
   const hoursArray: number[] = Array.from({ length: 25 }, (v, i) => i % 25);
   const minutesArray: number[] = Array.from({ length: 60 }, (v, i) => i);
-  const colorArray: string[] = ['#679436', '#F680F7', '#3D4ABA', '#ffc95c', '#29abe2', '#07E092' ]
+  const colorArray: string[] = [
+    "#679436",
+    "#F680F7",
+    "#3D4ABA",
+    "#ffc95c",
+    "#29abe2",
+    "#07E092",
+  ];
 
   const handleClose = () => {
     onClose();
-    console.log("pressed");
+    setName("");
   };
 
   const handleHourChange = (itemValue: number) => {
     if (itemValue === 0 && selectedMinutes === 0) {
-        setSelectedMinutes(1);
-        setSelectedHours(0);
-      } else {
+      setSelectedMinutes(1);
+      setSelectedHours(0);
+    } else {
       setSelectedHours(itemValue);
-      }
+    }
   };
   const handleMinuteChange = (itemValue: number) => {
     if (selectedHours === 0 && itemValue === 0) {
-        setSelectedMinutes(1);
+      setSelectedMinutes(1);
     } else {
-    setSelectedMinutes(itemValue);
+      setSelectedMinutes(itemValue);
     }
   };
   const duration = selectedHours * 60 + selectedMinutes;
   const handleSubmit = async () => {
-    await dispatch(createTask({
+    await dispatch(
+      createTask({
         id: Math.floor(Math.random() * 1000),
         name,
         duration,
         isActive: false,
         timeRemaining: duration * 60,
         endTime: 0,
-        color: selectedColor
-    }));
-    setName('');
-    setSelectedColor('#679436')
+        color: selectedColor,
+      })
+    );
+    setName("");
+    setSelectedColor("#679436");
     onClose();
-  }
+  };
 
-  const textInputRef = useRef<TextInput>(null)
+  const textInputRef = useRef<TextInput>(null);
   const blurInput = () => {
-    if(textInputRef.current) {
-        textInputRef.current.blur();
+    if (textInputRef.current) {
+      textInputRef.current.blur();
     }
-  }
+  };
 
   return (
     <Modal
@@ -80,83 +90,105 @@ const CreateTask = ({ visible, onClose }: ModalProps) => {
       transparent={true}
     >
       <View style={styles.modal}>
-        <TouchableWithoutFeedback onPress={blurInput} >
-        <View style={styles.container}>
-          <View style={styles.head}>
-            <Text style={styles.title}>Create a Task</Text>
-            <Pressable style={styles.button} onPress={handleClose}>
-              <AntDesign name="close" size={24} color="black" />
-            </Pressable>
-          </View>
-          <View style={styles.optionsContainer}>
+        <TouchableWithoutFeedback onPress={blurInput}>
+          <View
+            style={[
+              styles.container,
+              { backgroundColor: light ? "#EEEEEE" : "#1C1C1C" },
+            ]}
+          >
+            <View
+              style={[
+                styles.head,
+                { backgroundColor: light ? "#CBCBCB" : "#2D2D2D" },
+              ]}
+            >
+              <Text
+                style={[styles.title, { color: light ? "#2D2D2D" : "#CBCBCB" }]}
+              >
+                Create a Task
+              </Text>
+              <Pressable style={styles.button} onPress={handleClose}>
+                <AntDesign name="close" size={24} color="black" />
+              </Pressable>
+            </View>
+            <View style={styles.optionsContainer}>
               <TextInput
                 inputMode="text"
                 keyboardAppearance="dark"
                 value={name}
                 onChangeText={setName}
                 placeholder="Task Name"
-                placeholderTextColor="#505050"
-                style={styles.input}
+                placeholderTextColor={light ? "#CBCBCB" : "#505050"}
+                style={[styles.input, { color: light ? "#2D2D2D" : "#CBCBCB" }]}
                 returnKeyType="done"
                 ref={textInputRef}
               />
               <View>
-              <Text style={styles.label}>Duration:</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  style={styles.picker}
-                  selectedValue={selectedHours}
-                  onValueChange={handleHourChange}
-                >
-                  {hoursArray.map((hour) => (
-                    <Picker.Item
-                      key={hour}
-                      label={`${hour}`}
-                      value={hour}
-                      color="#CBCBCB"
-                    />
-                  ))}
-                </Picker>
-                <Text style={styles.pickerText}>Hours</Text>
+                <Text style={styles.label}>Duration:</Text>
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    style={styles.picker}
+                    selectedValue={selectedHours}
+                    onValueChange={handleHourChange}
+                  >
+                    {hoursArray.map((hour) => (
+                      <Picker.Item
+                        key={hour}
+                        label={`${hour}`}
+                        value={hour}
+                        color={light ? "#2D2D2D" : "#CBCBCB"}
+                      />
+                    ))}
+                  </Picker>
+                  <Text style={styles.pickerText}>Hours</Text>
 
-                <Picker
-                  style={styles.picker}
-                  selectedValue={selectedMinutes}
-                  onValueChange={handleMinuteChange}
-                >
-                  {minutesArray.map((minute) => (
-                    <Picker.Item
-                      key={minute}
-                      label={`${minute}`}
-                      value={minute}
-                      color="#CBCBCB"
-                    />
-                  ))}
-                </Picker>
-                <Text style={styles.pickerText}>Minutes</Text>
-              </View>
+                  <Picker
+                    style={styles.picker}
+                    selectedValue={selectedMinutes}
+                    onValueChange={handleMinuteChange}
+                  >
+                    {minutesArray.map((minute) => (
+                      <Picker.Item
+                        key={minute}
+                        label={`${minute}`}
+                        value={minute}
+                        color={light ? "#2D2D2D" : "#CBCBCB"}
+                      />
+                    ))}
+                  </Picker>
+                  <Text style={styles.pickerText}>Minutes</Text>
+                </View>
               </View>
               <View>
-                    <Text style={styles.label}>Color:</Text>
-                    <View style={styles.colorSelector}>
-                        {colorArray.map((color, index) => (
-                            <Pressable
-                              key={index}
-                              onPress={() => setSelectedColor(color)}
-                              style={({pressed}) =>
-                                [styles.colorBtn, { backgroundColor: color + '80', borderColor: color }, selectedColor === color && styles.selectedColor]}
-                            />
-                        ))}
-                    </View>
+                <Text style={styles.label}>Color:</Text>
+                <View style={styles.colorSelector}>
+                  {colorArray.map((color, index) => (
+                    <Pressable
+                      key={index}
+                      onPress={() => setSelectedColor(color)}
+                      style={({ pressed }) => [
+                        styles.colorBtn,
+                        { backgroundColor: color + "80", borderColor: color },
+                        selectedColor === color && styles.selectedColor,
+                      ]}
+                    />
+                  ))}
+                </View>
               </View>
-            <Pressable onPress={handleSubmit} style={({pressed}) =>
-             [styles.submit, pressed && styles.submitPressed]}>
-              <Text style={styles.submitText}>Create Task</Text>
-            </Pressable>
+              <Pressable
+                onPress={handleSubmit}
+                style={({ pressed }) => [
+                  styles.submit,
+                  pressed && styles.submitPressed,
+                ]}
+              >
+                <Text style={styles.submitText}>Create Task</Text>
+              </Pressable>
             </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
     </Modal>
   );
 };
@@ -190,7 +222,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: "bold",
-    color: "#CBCBCB"
+    color: "#CBCBCB",
   },
   optionsContainer: {
     gap: 60,
@@ -255,12 +287,12 @@ const styles = StyleSheet.create({
   },
   submitText: {
     fontSize: 22,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   submitPressed: {
-    transform: [{scale: 0.9}],
-    opacity: 0.5
-  }
+    transform: [{ scale: 0.9 }],
+    opacity: 0.5,
+  },
 });
 
 export default CreateTask;

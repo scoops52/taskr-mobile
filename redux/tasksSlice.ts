@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { exampleTasks } from "../constants/exampleTasks";
-
+import * as Notifications from 'expo-notifications';
 export type TaskId = number | undefined;
 
 export interface Task {
@@ -31,6 +31,24 @@ const convertTime = () => {
     return totalSeconds;
 }
 
+const scheduleNotification = async (notificationTime: number) => {
+  try {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Task Done',
+        body: 'A Task has been completed!',
+        sound: 'default'
+      },
+      trigger: {
+        seconds: notificationTime,
+      },
+    });
+    console.log('Notification scheduled successfully.');
+    console.log(notificationTime);
+  } catch (error) {
+    console.log('Failed to schedule notification:', error);
+  }
+};
 
 
 
@@ -64,7 +82,7 @@ const tasksSlice = createSlice({
             const task = state.tasks.find((task) => task.id === action.payload);
             if (task) {
                 task.endTime = currentTime + task.timeRemaining;
-                console.log(currentTime)
+                scheduleNotification(task.timeRemaining);
             };
         },
         removeTask: (state, action: PayloadAction<TaskId>) => {
@@ -90,9 +108,20 @@ const tasksSlice = createSlice({
         },
         clearAllTasks: (state) => {
             state.tasks = [];
+        },
+        updateTimeRemaining: (state, action: PayloadAction<number>) => {
+            state.tasks.forEach((task) => {
+                if (task.isActive) {
+                    task.timeRemaining -= action.payload;
+                    if (task.timeRemaining <= 0) {
+                      task.timeRemaining = 0;
+                      task.isActive = false;
+                    }
+                  }
+            });
         }
     }
 });
 
-export const { createTask, startTask, countdown, stopTask, calculateEndTime, removeTask, editTask, addTime, clearAllTasks } = tasksSlice.actions;
+export const { createTask, startTask, countdown, stopTask, calculateEndTime, removeTask, editTask, addTime, clearAllTasks, updateTimeRemaining } = tasksSlice.actions;
 export default tasksSlice.reducer;

@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet, Modal, Pressable } from "react-native";
 import React from "react";
 import { ModalProps } from "./CreateTask";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { clearAllTasks } from "../redux/tasksSlice";
 
 const ClearAll = ({ visible, onClose }: ModalProps) => {
+    const light = useAppSelector(state => state.theme.theme === 'light')
     const dispatch = useAppDispatch();
     const handleClear = () => {
         dispatch(clearAllTasks());
@@ -17,8 +18,8 @@ const ClearAll = ({ visible, onClose }: ModalProps) => {
   return (
     <Modal visible={visible} transparent={true}>
       <Pressable onPress={handleClose}  style={styles.container}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Are you sure?</Text>
+        <View style={[styles.modalContent, { backgroundColor: light ?  "#CBCBCB" : "#2D2D2D" }]}>
+          <Text style={[styles.modalTitle, { color: light ?  "#2D2D2D" : "#CBCBCB"  }]}>Are you sure?</Text>
           <View style={styles.buttonsContainer}>
             <Pressable
               onPress={handleClear}
@@ -58,7 +59,6 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   modalContent: {
-    backgroundColor: "#2D2D2D",
     borderRadius: 10,
     borderWidth: 0.5,
     borderColor: "#CBCBCB",

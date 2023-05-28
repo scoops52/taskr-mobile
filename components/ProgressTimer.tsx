@@ -1,17 +1,28 @@
 
 import Svg, { Circle } from "react-native-svg";
 import React, {useEffect, useRef, useState} from 'react'
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Pressable } from 'react-native';
 import { TaskProps} from './SingleTask';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { countdown, Task } from '../redux/tasksSlice';
+import { Audio } from 'expo-av';
 
 const ProgressTimer = ({task}: TaskProps) => {
+    const light = useAppSelector(state => state.theme.theme === 'light')
     const dispatch = useAppDispatch();
     const hours = Math.floor(task.timeRemaining / 3600);
     const minutes = Math.floor((task.timeRemaining % 3600) / 60).toString().padStart(2, '0');
     const seconds = Math.floor(task.timeRemaining % 60).toString().padStart(2, '0');
+    const color = light ? '#ffffff86' : task.color
     
+    const playSound = async () => {
+        const { sound } = await Audio.Sound.createAsync(
+            require('../assets/sound.m4a'),
+            { shouldPlay: true }
+        );
+        await sound.playAsync();
+    }
+
     useEffect(() => {
         let intervalId: NodeJS.Timeout | undefined;
         if (task.isActive) {
@@ -21,11 +32,13 @@ const ProgressTimer = ({task}: TaskProps) => {
         }
         if (intervalId && task.timeRemaining === 0) {
             clearInterval(intervalId);
+            playSound();
         }
 
         return () => 
         {clearInterval(intervalId)}
     }, [dispatch, task.isActive, task.timeRemaining, task.id])
+
   return (
     <View>
       <Svg width={150} height={150}>
@@ -33,7 +46,7 @@ const ProgressTimer = ({task}: TaskProps) => {
           cx={65}
           cy={70}
           r={60}
-          stroke={task.color + '90'}
+          stroke={light ? '#ffffff82' : color + '90'}
           strokeWidth={5}
           fill='transparent'
         />
@@ -41,7 +54,7 @@ const ProgressTimer = ({task}: TaskProps) => {
           cx={65}
           cy={70}
           r={60}
-          stroke={task.color}
+          stroke={color}
           strokeWidth={5}
           strokeDasharray={[Math.PI * 60 * 2]}
           strokeDashoffset={
@@ -50,7 +63,7 @@ const ProgressTimer = ({task}: TaskProps) => {
           fill='transparent'
         />
         <View style={styles.container}>
-        <Text style={[styles.time, { color: task.color}]}>
+        <Text style={[styles.time, { color: color}]}>
             {hours}:{minutes}:{seconds}
         </Text>
         </View>
@@ -69,6 +82,12 @@ const styles = StyleSheet.create({
     time: {
         fontSize: 26,
         fontWeight: 'bold'
+    },
+    testButton: {
+        padding: 15,
+        alignItems: "center",
+        borderRadius: 8,
+        marginTop: 10,
     }
 })
 

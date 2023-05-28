@@ -1,10 +1,11 @@
 import { View, Text, Modal, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import { TaskModalProps } from "./EditTask";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { editTask, removeTask, Task } from "../redux/tasksSlice";
 
 const CompleteTask = ({ visible, onClose, task }: TaskModalProps) => {
+  const light = useAppSelector((state) => state.theme.theme === "light");
   const dispatch = useAppDispatch();
   const initialHours = task ? Math.floor(task.duration / 60) : null;
   const initialMinutes = task ? Math.floor(task.duration % 60) : null;
@@ -25,7 +26,6 @@ const CompleteTask = ({ visible, onClose, task }: TaskModalProps) => {
     ...task,
     isActive: false,
     timeRemaining: resetTimeRemaining,
-    
   };
   const handleRestart = () => {
     dispatch(editTask(resetTask));
@@ -39,7 +39,13 @@ const CompleteTask = ({ visible, onClose, task }: TaskModalProps) => {
       transparent={true}
     >
       <View style={styles.modalContainer}>
-        <View style={[styles.modalContent, { borderColor: task.color }]}>
+        <View
+          style={[
+            styles.modalContent,
+            { backgroundColor: light ? "#CBCBCB" : "#2D2D2D" },
+            { borderColor: task.color },
+          ]}
+        >
           <Text
             style={[
               styles.modalHeader,
@@ -51,7 +57,7 @@ const CompleteTask = ({ visible, onClose, task }: TaskModalProps) => {
           <Text style={[styles.modalText, { color: task.color }]}>
             You worked on the task:
           </Text>
-          <Text style={[styles.modalText, { color: task.color }]}>
+          <Text style={[styles.modalTextTask, { color: task.color }]}>
             "{task.name}"
           </Text>
           <Text style={[styles.modalText, { color: task.color }]}>
@@ -66,7 +72,7 @@ const CompleteTask = ({ visible, onClose, task }: TaskModalProps) => {
                 { backgroundColor: task.color },
               ]}
             >
-              <Text style={styles.submitText}>Complete Task</Text>
+              <Text style={[styles.submitText, { color: light ? "#CBCBCB" : "#2D2D2D" }]}>Complete Task</Text>
             </Pressable>
             <Pressable
               onPress={handleRestart}
@@ -109,7 +115,7 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   modalHeader: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: "bold",
     borderWidth: 0,
     borderBottomWidth: 2,
@@ -117,6 +123,10 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 20,
     textAlign: "center",
+  },
+  modalTextTask: {
+    fontWeight: '600', 
+    fontSize: 24,
   },
   buttonsContainer: {
     flexDirection: "row",

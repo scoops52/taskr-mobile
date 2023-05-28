@@ -2,6 +2,7 @@
   "expo": {
     "name": "taskr-mobile",
     "slug": "taskr-mobile",
+    "permissions": ["NOTIFICATIONS"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,8 +16,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    },
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["location", "fetch"]
+      }
+  },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

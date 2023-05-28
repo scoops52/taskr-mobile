@@ -5,11 +5,15 @@ import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import About from "./About";
 import ClearAll from "./ClearAll";
 import { MaterialCommunityIcons, Fontisto } from '@expo/vector-icons'; 
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setTheme } from "../redux/themeSlice";
 
 const Menu = ({ visible, onClose }: ModalProps) => {
+  const theme = useAppSelector(state => state.theme.theme);
+  const dispatch = useAppDispatch();
   const [about, setAbout] = useState(false);
   const [clear, setClear] = useState(false);
-  const [themeToggle, setThemeToggle] = useState("Light");
+  const [lightTheme, setLightTheme] = useState(false);
 
   const handleAbout = () => {
     setAbout(true);
@@ -32,7 +36,11 @@ const Menu = ({ visible, onClose }: ModalProps) => {
     onClose();
   };
 
-  const handleTheme = () => {};
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    dispatch(setTheme(newTheme))
+
+  };
 
   return (
     <>
@@ -65,10 +73,14 @@ const Menu = ({ visible, onClose }: ModalProps) => {
               />
             </Pressable>
             <Pressable style={[styles.menuItem, { borderBottomWidth: 0 }]}>
-              <Text style={[, styles.menuItemText]}>Toggle Theme</Text>
+              <Text style={[, styles.menuItemText]}>{theme === 'dark' ? "Dark" : "Light"}</Text>
               <View style={styles.switchContainer}>
                 <MaterialCommunityIcons name="weather-night" size={24} color="#CBCBCB" />
-                <Switch />
+                <Switch 
+                    value={theme === 'light'} 
+                    onValueChange={toggleTheme} 
+                    trackColor={{false: '#767577', true: '#767577'}}
+                    />
                 <Fontisto name="day-sunny" size={24} color="#CBCBCB" />
               </View>
             </Pressable>

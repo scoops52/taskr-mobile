@@ -1,18 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { TaskProps } from './SingleTask'
-import { useAppDispatch } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { calculateEndTime, startTask, stopTask } from '../redux/tasksSlice';
 
 const ToggleTask = ({ task }: TaskProps) => {
+    const light = useAppSelector(state => state.theme.theme === 'light');
+    const taskColor = light ? 'rgba(255, 255, 255, 0.7)' : task.color;
     const [label, setLabel] = useState('Start Task');
     const dispatch = useAppDispatch();
-    const [color, setColor] = useState(task.color);
+    const [color, setColor] = useState(taskColor);
+    
 
     useEffect(() => {
-      setColor(task.color);
+      setColor(taskColor);
+      if (!task.isActive) {
+        setLabel('Start Task')
+      } else {
+        setLabel('Stop Task')
+      }
     
-    }, [task.color])
+    }, [task.color, color, light, task.isActive])
     
 
     const handleToggle = () => {
@@ -35,7 +43,7 @@ const ToggleTask = ({ task }: TaskProps) => {
             }, styles.button, 
         ]}
            >
-        <Text style={styles.label}>{label}</Text>
+        <Text style={[styles.label,{ color: light ? '#ffffff' : 'rgba(0,0,0,0.5)'}]}>{label}</Text>
     </Pressable>
     </View>
   )

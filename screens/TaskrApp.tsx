@@ -1,12 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, SafeAreaView, Animated, Pressable, Platform, StatusBar} from "react-native";
 import Tasks from "../components/Tasks";
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
- 
+import * as Notifications from 'expo-notifications';
 
 import CreateTask from "../components/CreateTask";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
+import { useAppSelector } from "../redux/hooks";
 
 const headerHeight = Platform.select({
   ios: 115,
@@ -15,6 +16,7 @@ const headerHeight = Platform.select({
 })
 
 const TaskrApp = () => {
+   const light = useAppSelector(state => state.theme.theme === 'light')
    const [create, setCreate] = useState(false);
    const [ menu, setMenu ] = useState(false);
 
@@ -36,18 +38,39 @@ const TaskrApp = () => {
     inputRange:[0,headerHeight],
     outputRange:[0,-headerHeight]
    })
+   useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
+  
+  const registerForPushNotificationsAsync = async () => {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+  
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+  
+    if (finalStatus !== 'granted') {
+      return;
+    }
+  
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    // Send the token to your server for further processing/storage
+  };
+  
 
   return (
     <>
-    <StatusBar barStyle='light-content' />
-    <View style={styles.container}>
+    <StatusBar barStyle={ light ? 'dark-content' : 'light-content'} />
+    <View style={[styles.container, {backgroundColor: light ? '#EEEEEE' : '#0a0a0a'}]}>
       <Pressable
           onPress={handleCreate}
           style={({pressed}) => [styles.createButton, { opacity: pressed ? 0.5 : 1 }]}
           >
-            <Ionicons name="add" size={45} color="#3D4ABA" style={styles.createButtonIcon} />
+            <Ionicons name="add" size={45} color={ light ? "#EEEEEE" : "#0a0a0a"  } style={styles.createButtonIcon} />
           </Pressable>
-      <Animated.View style={[styles.header, {height: headerHeight, transform: [{ translateY: headerY }]}]}>
+      <Animated.View style={[styles.header, {backgroundColor: light ? '#EEEEEE' : '#0a0a0a'}, {height: headerHeight, transform: [{ translateY: headerY }]}]}>
         <View style={styles.titleContainer}>
         <Header colors={['#f62ff9', '#6b67ea', '#73d808', ]} style={styles.title}>
             TASK
@@ -55,7 +78,7 @@ const TaskrApp = () => {
         <Text style={styles.title}>r</Text>
         </View>
         <Pressable onPress={handleMenu} style={({pressed}) => [styles.menu, { opacity: pressed ? 0.5 : 1 }]}>
-          <SimpleLineIcons name="options-vertical" size={25} color="rgba(255,255,255,1)" />
+          <SimpleLineIcons name="options-vertical" size={25} color="#CBCBCB" />
         </Pressable>
       </Animated.View>
       <Tasks scrollY={scrollY} headerHeight={headerHeight} />
@@ -69,7 +92,6 @@ const TaskrApp = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgb(10,10,10)',
   },
   header: {
     position: 'absolute',
@@ -77,7 +99,6 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     height: 100,
-    backgroundColor: 'rgb(10,10,10)',
     paddingTop: 40,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -92,8 +113,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 45,
     fontWeight: '700',
-    color: '#CBCBCB',
     marginTop: 20,
+    color: '#CBCBCB'
   },
   menu: {
     position: 'absolute',
