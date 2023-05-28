@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { exampleTasks } from "../constants/exampleTasks";
 import * as Notifications from 'expo-notifications';
+
 export type TaskId = number | undefined;
 
 export interface Task {
-    id?: TaskId;
+    id: TaskId;
     name: string;
     duration: number;
     isActive: boolean;
@@ -31,8 +32,9 @@ const convertTime = () => {
     return totalSeconds;
 }
 
-const scheduleNotification = async (notificationTime: number) => {
+const scheduleNotification = async (taskId: TaskId, notificationTime: number) => {
   try {
+    const identifier = String(taskId);
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Task Done',
@@ -42,6 +44,7 @@ const scheduleNotification = async (notificationTime: number) => {
       trigger: {
         seconds: notificationTime,
       },
+      identifier,
     });
     console.log('Notification scheduled successfully.');
     console.log(notificationTime);
@@ -50,7 +53,14 @@ const scheduleNotification = async (notificationTime: number) => {
   }
 };
 
-
+const cancelNotification = async (taskId: TaskId) => {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(String(taskId));
+    console.log('Notification canceled succesffully');
+  } catch (error) {
+    console.log('Failed to cancel notification', error);
+  }
+}
 
 const tasksSlice = createSlice({
     name: 'tasks',
@@ -75,6 +85,7 @@ const tasksSlice = createSlice({
             const task = state.tasks.find((task) => task.id === action.payload);
             if (task) {
                 task.isActive = false;
+                cancelNotification(task.id);
             };
         },
         calculateEndTime: (state, action: PayloadAction<TaskId>) => {
@@ -82,7 +93,7 @@ const tasksSlice = createSlice({
             const task = state.tasks.find((task) => task.id === action.payload);
             if (task) {
                 task.endTime = currentTime + task.timeRemaining;
-                scheduleNotification(task.timeRemaining);
+                scheduleNotification(task.id, task.timeRemaining);
             };
         },
         removeTask: (state, action: PayloadAction<TaskId>) => {

@@ -24,11 +24,6 @@ const Tasks = ({ scrollY, headerHeight }: TasksProps) => {
 
   return (
     <View style={styles.container}>
-      {tasks.length === 0 && (
-        <View style={styles.container}>
-          <Text style={styles.text}>No tasks.</Text>
-        </View>
-      )}
       <Animated.ScrollView
         scrollEventThrottle={16}
         bounces={false}

@@ -7,6 +7,7 @@ import { calculateEndTime, countdown, Task, updateTimeRemaining } from '../redux
 import { Audio } from 'expo-av';
 import * as Notifications from 'expo-notifications'
 
+
 const ProgressTimer = ({ task }: TaskProps) => {
   const light = useAppSelector(state => state.theme.theme === 'light');
   const dispatch = useAppDispatch();
@@ -32,12 +33,6 @@ const ProgressTimer = ({ task }: TaskProps) => {
   
     if (currentState === 'active' && nextAppState.match(/inactive|background/)) {
       timestampRef.current = Date.now();
-    //   dispatch(calculateEndTime(task.id));
-    //   const endTime = task.endTime/ 1000;
-    //   if (task.isActive) {
-    //     scheduleNotification(endTime);
-    //     console.log(endTime + 's');
-    //   }
     }
   
     if (currentState.match(/inactive|background/) && nextAppState === 'active') {
@@ -92,23 +87,6 @@ const ProgressTimer = ({ task }: TaskProps) => {
     }
   }, [dispatch, task.isActive, inactiveDuration]);
 
-//   const scheduleNotification = async (notificationTime: number) => {
-//     const schedulingParams = {
-//         content: {
-//             title: 'Task Done',
-//             body: 'A Task has been completed!',
-//         },
-//         trigger: {
-//             type: 'calendar',
-//             date: new Date(notificationTime)
-//         },
-//     };
-//     await Notifications.scheduleNotificationAsync(schedulingParams);
-//     console.log('notification sent');
-//   };
-
-  
-
   return (
     <View>
     <Svg width={150} height={150}>
@@ -133,7 +111,7 @@ const ProgressTimer = ({ task }: TaskProps) => {
         fill='transparent'
       />
       <View style={styles.container}>
-      <Text style={[styles.time, { color: 'black'}]}>
+      <Text style={[styles.time, { color: color }]}>
           {hours}:{minutes}:{seconds}
       </Text>
       </View>

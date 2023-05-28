@@ -8,6 +8,7 @@ import CreateTask from "../components/CreateTask";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import { useAppSelector } from "../redux/hooks";
+import ReorderedTasks from "../components/ReorderedTasks";
 
 const headerHeight = Platform.select({
   ios: 115,
@@ -55,8 +56,10 @@ const TaskrApp = () => {
       return;
     }
   
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
-    // Send the token to your server for further processing/storage
+    const token = (await Notifications.getExpoPushTokenAsync({
+      projectId: '34ea25f2-4785-4252-b8a6-f45c924285bd',
+    })).data;
+    console.log(token);
   };
   
 
@@ -81,7 +84,7 @@ const TaskrApp = () => {
           <SimpleLineIcons name="options-vertical" size={25} color="#CBCBCB" />
         </Pressable>
       </Animated.View>
-      <Tasks scrollY={scrollY} headerHeight={headerHeight} />
+      <ReorderedTasks headerHeight={headerHeight} />
       <CreateTask visible={create} onClose={closeModal}  />
       <Menu visible={menu} onClose={closeModal}  />
     </View>

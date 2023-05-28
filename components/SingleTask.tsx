@@ -18,7 +18,12 @@ export interface TaskProps {
   task: Task;
 }
 
-const SingleTask = ({ task }: TaskProps) => {
+// interface SingleTaskProps extends TaskProps {
+//   onLongPress:  () => void;
+//   isActive: boolean;
+// }
+
+const SingleTask = ({ task}: TaskProps) => {
   const light = useAppSelector(state => state.theme.theme === 'light')
   const dispatch = useAppDispatch();
   const [edit, setEdit] = useState(false);
