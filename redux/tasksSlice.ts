@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { exampleTasks } from "../constants/exampleTasks";
 import * as Notifications from 'expo-notifications';
 
 export type TaskId = number | undefined;
@@ -19,7 +18,7 @@ type InitialState = {
 }
 
 const initialState: InitialState = {
-    tasks:[...exampleTasks]
+    tasks:[]
 }
 
 const convertTime = () => {
